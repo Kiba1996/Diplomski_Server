@@ -1,0 +1,6 @@
+{
+    "type": "node",
+    "request": "Launch",
+    "name": "Launch Program",
+    "program": "${workspaceFolder}/api/controllers/stationCont.js"
+}
