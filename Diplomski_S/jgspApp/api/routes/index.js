@@ -11,13 +11,14 @@ var ctrlAuth = require('../controllers/authentication');
 var ctrlStation = require('../controllers/stationCont');
 //var ctrlDayTypeConf = require('../controllers/dayTypeCont');
 var ctrlLine = require('../controllers/lineCont');
+var ctrlVehicle = require('../controllers/vehicleCont');
+var ctlPricelist = require('../controllers/pricelistCont');
 
 router.get('/profile', auth, ctrlProfile.profileRead);
 
 router.post('/register', ctrlAuth.register);
 router.post('/login', ctrlAuth.login);
 //router.post('',ctrlDayTypeConf.saveDayType);
-
 router.post('/addStation', ctrlStation.addStation);
 router.get('/getAllStations', ctrlStation.getAllStations);
 router.post('/changeStation', ctrlStation.changeStation);
@@ -31,4 +32,10 @@ router.get('/getAllLines',  ctrlLine.getAllLines);
 router.post('/changeLine/:_id',  ctrlLine.changeLine);
 router.delete('/removeLine/:_id', ctrlLine.removeLine);
 
+router.post('/addVehicle', ctrlVehicle.addVehicle);
+router.get('/getAllVehicles', ctrlVehicle.getAllVehicles);
+router.get('/getAllAvailableVehicles', ctrlVehicle.getAllAvailableVehicles);
+router.delete('/removeVehicle/:_id', ctrlVehicle.removeVehicle);
+
+router.post('/addPricelist',ctlPricelist.addPricelist);
 module.exports = router;

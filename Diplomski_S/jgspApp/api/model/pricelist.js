@@ -13,7 +13,7 @@ var pricelistSchema = new mongoose.Schema({
     },
     ticketPricess: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'ticektPrices'
+        ref: 'ticketPrices'
     }],
 }, {collection: 'pricelist'});
 

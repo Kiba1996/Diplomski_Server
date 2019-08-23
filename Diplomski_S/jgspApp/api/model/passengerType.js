@@ -6,7 +6,8 @@ var passengerTypeSchema = new mongoose.Schema({
 //        type: mongoose.Schema.Types.ObjectId
 //    },
     name: {
-        type: String
+        type: String,
+        unique: true
     },
     coefficient: {
         type: Number
