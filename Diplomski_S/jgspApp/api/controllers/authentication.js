@@ -94,3 +94,38 @@ module.exports.login = function(req, res){
         }
     })(req,res);
 };
+
+
+module.exports.edit = function(req, res)
+{
+    User.findOneAndUpdate({_id: req.body.Id},{name: req.body.Name, email:req.body.Email, surname: req.body.Surname, address: req.body.Address, birthday: new Date(req.body.Birthday)}).then(k=>{
+        return res.status(200).json({
+            "message" : "Timetable successfully removed."
+    });
+    })
+
+  // if(!req.body.name || !req.body.email || !req.body.password || !req.body.surname || !req.body.address  || !req.body.birthday || !req.body.role) {
+    //     sendJSONresponse(res, 400, {
+    //         "message": "All fields required"
+    //     });
+    //     return;
+    // }
+
+    // var user = new User();
+
+    // user.name = req.body.name;
+    // user.email = req.body.email;
+    // user.surname = req.body.surname;
+    // user.address = req.body.address;
+    // user.birthday = req.body.birthday;
+    //user.image = req.body.image;
+    //user.activated = req.body.activated;
+   // user.role = req.body.role;
+//if(user.role == "AppUser"){
+
+   // PT.findOne({name: req.body.passengerType}).then(bla => {
+    //    user.passengerType = bla.id;
+
+     //   user.setPassword(req.body.password);
+
+};

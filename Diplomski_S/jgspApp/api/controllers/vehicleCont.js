@@ -20,7 +20,18 @@ module.exports.removeVehicle = function(req, res)
 
 module.exports.getAllAvailableVehicles = function(req, res)
 {
-    Vehicle.find({timetables: []}).exec().then(type => {res.send(type);});
+   // Vehicle.find({timetables: []}).exec().then(type => {res.send(type);});
+    
+    Vehicle.find().exec().then(vehicles =>{
+        var lista = [];
+        vehicles.forEach(v =>{
+            if(v.timetables.length == 0){
+                lista.push(v);
+            }
+        })
+        res.send(lista);
+    })
+  
 }
 
 module.exports.getAllVehicles = function(req, res)
