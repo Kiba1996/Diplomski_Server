@@ -2,7 +2,7 @@ var passport = require('passport');
 var mongoose = require('mongoose');
 var User = mongoose.model('User');
 var PT = mongoose.model('passengerType');
-
+var fs = require('fs');
 var sendJSONresponse = function(res, status, content)
 {
     res.status(status);
@@ -26,7 +26,15 @@ module.exports.register = function(req, res)
     user.address = req.body.address;
     user.birthday = req.body.birthday;
     //user.image = req.body.image;
-    //user.activated = req.body.activated;
+    if(req.files != null){
+        user.image.data = req.files.file.data; // fs.readFileSync(req.files.file.path) //req.files.file.data;//
+        user.image.contentType = 'image/png';
+    }else{
+        user.image.data = null;
+        user.image.contentType = 'image/png';
+    }
+  
+    user.activated = req.body.activated;
     user.role = req.body.role;
 if(user.role == "AppUser"){
 
@@ -98,11 +106,56 @@ module.exports.login = function(req, res){
 
 module.exports.edit = function(req, res)
 {
-    User.findOneAndUpdate({_id: req.body.Id},{name: req.body.Name, email:req.body.Email, surname: req.body.Surname, address: req.body.Address, birthday: new Date(req.body.Birthday)}).then(k=>{
-        return res.status(200).json({
-            "message" : "Timetable successfully removed."
-    });
+    var img = {data: req.files.file.data, contentType: 'image/png'};
+    const  nesto = {name: req.body.name, email:req.body.email, surname: req.body.surname, address: req.body.address, birthday: new Date(req.body.birthday)}
+   const  nesto1 = {name: req.body.name, email:req.body.email, surname: req.body.surname, address: req.body.address, birthday: new Date(req.body.birthday), activated:'PENDING', image: img}
+      
+    if(req.files != null){
+      
+         User.findOneAndUpdate({_id: req.body.Id},nesto1).then(k=>{
+            return res.status(200).json({
+                "message" : "Timetable successfully removed."
+        });
+        })
+    }
+    else{
+    //    nesto = {name: req.body.name, email:req.body.email, surname: req.body.surname, address: req.body.address, birthday: new Date(req.body.birthday), activated:'PENDING', image: img}
+        User.findOneAndUpdate({_id: req.body.Id},nesto).then(k=>{
+            return res.status(200).json({
+                "message" : "Timetable successfully removed."
+        });
+        })
+    }
+};
+module.exports.editPassword = function(req, res)
+{
+    User.findById(req.body.Id).then(u=>{
+        if(u.validPassword(req.body.oldPassword)){
+            if(req.body.newPassword == req.body.confirmPassword){
+                u.setPassword(req.body.newPassword);
+                const nesto = {hash: u.hash, salt:u.salt}
+                User.findOneAndUpdate({_id: req.body.Id},nesto).then(k=>{
+                    return res.status(200).json({
+                        "message" : "Timetable successfully removed."
+                });
+                })
+            }
+            else{
+                return res.status(400).json({"message" : "New Password does not match the Confirm Password"});
+            }
+          
+        }
+        else{
+            return res.status(400).json({"message":"Password does not match the old password"});
+            
+        
+        }
     })
+
+       
+  
+    };
+   
 
   // if(!req.body.name || !req.body.email || !req.body.password || !req.body.surname || !req.body.address  || !req.body.birthday || !req.body.role) {
     //     sendJSONresponse(res, 400, {
@@ -128,4 +181,3 @@ module.exports.edit = function(req, res)
 
      //   user.setPassword(req.body.password);
 
-};

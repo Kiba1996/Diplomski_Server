@@ -19,6 +19,7 @@ router.get('/profile', auth, ctrlProfile.profileRead);
 router.post('/register', ctrlAuth.register);
 router.post('/login', ctrlAuth.login);
 router.post('/edit',ctrlAuth.edit);
+router.post('/editPassword', ctrlAuth.editPassword);
 //router.post('',ctrlDayTypeConf.saveDayType);
 router.post('/addStation', ctrlStation.addStation);
 router.get('/getAllStations', ctrlStation.getAllStations);

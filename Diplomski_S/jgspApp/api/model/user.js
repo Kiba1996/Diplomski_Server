@@ -32,10 +32,12 @@ var userSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
-    image: {
-        type: String,
+    image: { 
+        data: Buffer, 
+        contentType: String,
         required: false
-    },
+     },
+    
     passengerType: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'passengerType',
