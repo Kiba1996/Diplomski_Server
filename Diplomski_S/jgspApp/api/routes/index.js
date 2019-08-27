@@ -14,13 +14,16 @@ var ctrlLine = require('../controllers/lineCont');
 var ctrlVehicle = require('../controllers/vehicleCont');
 var ctlPricelist = require('../controllers/pricelistCont');
 var ctrTimetable = require('../controllers/timetableCont');
-router.get('/profile', auth, ctrlProfile.profileRead);
+var ctrlAutoriz = require('../controllers/authorizationCont');
+var ctrlTicket = require('../controllers/ticketCont');
 
+router.get('/profile', auth, ctrlProfile.profileRead);
+router.post('/resendReqest',ctrlProfile.resendRequst);
 router.post('/register', ctrlAuth.register);
 router.post('/login', ctrlAuth.login);
 router.post('/edit',ctrlAuth.edit);
 router.post('/editPassword', ctrlAuth.editPassword);
-//router.post('',ctrlDayTypeConf.saveDayType);
+
 router.post('/addStation', ctrlStation.addStation);
 router.get('/getAllStations', ctrlStation.getAllStations);
 router.post('/changeStation', ctrlStation.changeStation);
@@ -49,4 +52,20 @@ router.post('/changeTimetable', ctrTimetable.changeTimetable);
 router.delete('/removeTimetable/:_id', ctrTimetable.removeTimetable);
 router.get('/findVehicleId', ctrTimetable.findVehicleId);
 router.get('/getAllDayTypes', ctrlDayType.getAllDayTypes);
+
+router.get('/getAwaitingAdmins', ctrlAutoriz.getAwaitingAdmins);
+router.get('/getAwaitingControllers', ctrlAutoriz.getAwaitingControllers);
+router.get('/getAwaitingClients', ctrlAutoriz.getAwaitingClients);
+router.post('/authorizeAdmin', ctrlAutoriz.authorizeAdmin);
+router.post('/declineAdmin', ctrlAutoriz.declineAdmin);
+router.post('/authorizeController', ctrlAutoriz.authorizeController);
+router.post('/declineController', ctrlAutoriz.declineController);
+router.post('/authorizeUser', ctrlAutoriz.authorizeUser);
+router.post('/declineUser', ctrlAutoriz.declineUser);
+
+router.get('/getAllTicketTypes',ctrlTicket.getAllTicketTypes);
+router.get('/getTypeUser/:email', ctrlTicket.getTypeUser);
+router.post('/checkValidity',ctrlTicket.checkValidity);
+router.post('/addPayPal',ctrlTicket.addPayPal);
+
 module.exports = router;

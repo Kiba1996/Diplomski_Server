@@ -13,3 +13,16 @@ module.exports.profileRead = function(req, res)
         });
     }
 };
+
+module.exports.resendRequst = function(req,res)
+{
+    if(req.body.email == "")
+    {
+        res.status(400).json({"message": "Missing email"});
+    }
+    const nesto = {activated: "PENDING"};
+    User.findOneAndUpdate({email: req.body.email}, nesto).then(bla => {
+        //slanje mejla
+        res.status(200).json({"message": "Ok"});
+    });
+}
