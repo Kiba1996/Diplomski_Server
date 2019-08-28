@@ -102,17 +102,23 @@ module.exports.getPricelist = function(req, res)
      Pricelist.find().where().exec().then(type => { 
          var lala = type.reverse();
          var ret = lala.find(checkAdult);
-         
+         if(ret != undefined){
+            TIcketPrice.find().exec().then(t =>{
+                t.forEach( bla=>{
+                    if(bla.pricelist._id == ret.id){
+                        ret.ticketPricess.push(bla.id);
+                    }
+                });
+                res.send(ret);
+             });
+          
+         }else{
+            return res.status(404).json({
+                message: 'Currently there is no valid pricelist!'
+             });
+         }
        
-         TIcketPrice.find().exec().then(t =>{
-            t.forEach( bla=>{
-                if(bla.pricelist._id == ret.id){
-                    ret.ticketPricess.push(bla.id);
-                }
-            });
-            res.send(ret);
-         });
-      
+        
     
         
         });

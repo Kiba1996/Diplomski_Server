@@ -67,5 +67,9 @@ router.get('/getAllTicketTypes',ctrlTicket.getAllTicketTypes);
 router.get('/getTypeUser/:email', ctrlTicket.getTypeUser);
 router.post('/checkValidity',ctrlTicket.checkValidity);
 router.post('/addPayPal',ctrlTicket.addPayPal);
-
+router.get('/getTicketsForOneUser/:email', ctrlTicket.getAllTicketsForOneUser);
+router.get('/getTicketPrice',ctrlTicket.getTicketPrice);
+router.get('/getTicket/:id',ctrlTicket.getTicket);
+router.post('/validateTicketNoUser',ctrlTicket.validateTicketNoUser);
+router.post('/validateTicket/:email',ctrlTicket.validateTicket);
 module.exports = router;
