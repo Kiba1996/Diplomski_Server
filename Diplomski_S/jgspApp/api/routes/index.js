@@ -19,6 +19,7 @@ var ctrlTicket = require('../controllers/ticketCont');
 
 router.get('/profile', auth, ctrlProfile.profileRead);
 router.post('/resendReqest',ctrlProfile.resendRequst);
+
 router.post('/register', ctrlAuth.register);
 router.post('/login', ctrlAuth.login);
 router.post('/edit',ctrlAuth.edit);
@@ -51,6 +52,7 @@ router.get('/getAllTimetables', ctrTimetable.getAllTimetables);
 router.post('/changeTimetable', ctrTimetable.changeTimetable);
 router.delete('/removeTimetable/:_id', ctrTimetable.removeTimetable);
 router.get('/findVehicleId', ctrTimetable.findVehicleId);
+
 router.get('/getAllDayTypes', ctrlDayType.getAllDayTypes);
 
 router.get('/getAwaitingAdmins', ctrlAutoriz.getAwaitingAdmins);
@@ -72,4 +74,5 @@ router.get('/getTicketPrice',ctrlTicket.getTicketPrice);
 router.get('/getTicket/:id',ctrlTicket.getTicket);
 router.post('/validateTicketNoUser',ctrlTicket.validateTicketNoUser);
 router.post('/validateTicket/:email',ctrlTicket.validateTicket);
+
 module.exports = router;

@@ -5,82 +5,86 @@ module.exports.removeLine = function(req, res)
 {
     
     if(!req.params._id ) {
-        sendJSONresponse(res, 400, {
-            "message": "All fields required"
-        });
-        return;
+        return res.status(400).json( {"message": "You have to select a line you want to remove"});
     }
 
-    Line.findOneAndRemove({_id: req.params._id}).then(bla =>{
-        res.status(200).json({
-            "message" : "Line successfully removed."
-    });
-});
+    Line.findById(req.params._id).then(line => {
+        if(line == null || line == undefined)
+        {
+            return res.status(404).json({"message" : "Line that you are trying to remove either do not exist or was previously deleted by another user."});
+        }else{
+            Line.findOneAndRemove({_id: req.params._id}).then(line => {
+
+                    return res.status(200).json({"message" : "Line successfully removed."});
+
+            });
+        }
+    })
 }
 
 
 module.exports.changeLine = function(req, res){
    
     if(!req.params._id || !req.body.LineNumber || !req.body.ColorLine || req.body.Stations.length <=1) {
-        sendJSONresponse(res, 400, {
-            "message": "All fields required"
-        });
-        return;
+        return res.status(404).json({"message": "All fields are required"});
     }
-    const nest = { lineNumber : req.body.LineNumber, stations : req.body.Stations}
-    Line.findOneAndUpdate({_id : req.params._id}, nest).then(bla => {
-        res.status(200).json({
-            "message" : "Line successfully updated."
-        });
-    })
+    if(req.body.Stations == null || req.body.Stations.length < 2)
+    {
+        return res.status(400).json({"message": "You must add at least two stations per line"});
+    }
+    Line.findById(req.params._id).then(line => {
+        if( line == null || line == undefined)
+        {
+            return res.status(400).json({"message": "Line that you are trying to edit either do not exist or was previously deleted by another user."});
+        }else {
+            if(line.__v != req.body.Version)
+            {
+                return res.status(409).json({"message" : "CONFLICT You are trying to edit a Line that has been changed recently. Try again. "})
+            }else {
+                const updata = { lineNumber : req.body.LineNumber, stations : req.body.Stations}
+                Line.findOneAndUpdate({_id : req.params._id}, update).then(line => {
+                    return   res.status(200).json({ "message" : "Line successfully updated." });
 
+                })
+
+             }
+        }
+
+    })
 }
 
 module.exports.getAllLines = function(req, res)
 {
-    var types = [];
-    
      Line.find().exec().then(type => { res.send(type);});
-    console.log(type);
-    
-    
+     console.log(type);
 };
 
 
 module.exports.addLine = function(req, res)
 {
     if(!req.body.LineNumber || !req.body.ColorLine || req.body.Stations.length<=1 ) {
-        sendJSONresponse(res, 400, {
-            "message": "All fields required"
-        });
-        return;
+        return res.status(404).json({"message": "All fields are required"});
+    
     }
 
-    var station = new Line();
+    var line = new Line();
 
-    station.lineNumber = req.body.LineNumber;
-    station.colorLine = req.body.ColorLine;
+    line.lineNumber = req.body.LineNumber;
+    line.colorLine = req.body.ColorLine;
     req.body.Stations.forEach(function(element) {
-        station.stations.push(element.Id);
+        line.stations.push(element.Id);
       });
-    //station.stations = req.body.Stations;
-    //station.longitude = req.body.Longitude;
-    //user.image = req.body.image;
-    //user.activated = req.body.activated;
     
 
-    station.save(function(err){
+    line.save(function(err){
         if(err)
         {
-            res.status(404).json(err);
-            return;
+           return res.status(404).json({"message":err});
         }
 
-        res.status(200).json({
+        return res.status(200).json({
             "message" : "Station successfully added."
         });
     });
-
-
 
 };

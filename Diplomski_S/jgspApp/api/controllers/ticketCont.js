@@ -66,7 +66,6 @@ module.exports.validateTicketNoUser = function(req,res){
    
    var pr = (new Date(req.body.purchaseTime));
    pr.setHours(pr.getHours() -1);
-  // var aa =new Date(pr);
   var today = new Date(Date.now());
     if (pr < today)
     {
@@ -229,11 +228,6 @@ module.exports.getTypeUser = function(req,res){
 
 module.exports.addPayPal = function(req,res){
    
-    // if(req.params.email == ""){
-    //  return res.status(404).json({
-    //      "message" : "Missing an email."
-    //  });
-    // }
     var payp = new PayPal();
     payp.payementId = req.body.payementId;
     payp.createTime = new Date(req.body.createTime);
@@ -263,14 +257,11 @@ module.exports.addPayPal = function(req,res){
                     ticket.save(function(err){
                         if(err)
                         {
-                            res.status(404).json(err);
-                            return;
+                           return res.status(404).json({"message":err});
+                            
                         }else{
                             
                            if(req.body.name != undefined){
-                               //var pt = req.body.purchaseTime;
-                               //pt.setHours(getHours()-2);
-                               //var ptt = pt.toDateString().split["GMT"];
                                var mess = "Dear "+ req.body.name + ",\r\n Your purchase is successfull.\r\n Ticket price: " + tp.price+ "\r\n Ticket type: "+tt.name+"\r\nTime of purchase: "+req.body.purchaseTime+"\r\nTicket is valid for the next hour.\r\n Thank you.";
                             var mailOptions = {
                                 from: 'pusgs2019app@gmail.com',

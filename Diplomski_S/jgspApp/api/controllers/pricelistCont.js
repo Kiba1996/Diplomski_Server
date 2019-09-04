@@ -2,40 +2,7 @@ var mongoose = require('mongoose');
 var Pricelist = mongoose.model('pricelist');
 var TIcketPrice = mongoose.model('ticketPrices');
 var TT = mongoose.model('ticketType');
-// module.exports.removeLine = function(req, res)
-// {
-    
-//     if(!req.params._id ) {
-//         sendJSONresponse(res, 400, {
-//             "message": "All fields required"
-//         });
-//         return;
-//     }
 
-//     Line.findOneAndRemove({_id: req.params._id}).then(bla =>{
-//         res.status(200).json({
-//             "message" : "Line successfully removed."
-//     });
-// });
-// }
-
-
-// module.exports.changeLine = function(req, res){
-   
-//     if(!req.params._id || !req.body.LineNumber || !req.body.ColorLine || req.body.Stations.length <=1) {
-//         sendJSONresponse(res, 400, {
-//             "message": "All fields required"
-//         });
-//         return;
-//     }
-//     const nest = { lineNumber : req.body.LineNumber, stations : req.body.Stations}
-//     Line.findOneAndUpdate({_id : req.params._id}, nest).then(bla => {
-//         res.status(200).json({
-//             "message" : "Line successfully updated."
-//         });
-//     })
-
-// }
 module.exports.getTicketPrices = function(req, res)
 {
     var ret = [];
@@ -88,8 +55,7 @@ module.exports.getTicketPrices = function(req, res)
             }
           })
           res.send(rr);
-
-            
+ 
       })  
 
     })
@@ -97,12 +63,10 @@ module.exports.getTicketPrices = function(req, res)
 
 module.exports.getPricelist = function(req, res)
 {
-   
-    var types = []; 
      Pricelist.find().where().exec().then(type => { 
          var lala = type.reverse();
          var ret = lala.find(checkAdult);
-         if(ret != undefined){
+         if(ret != undefined && ret != null){
             TIcketPrice.find().exec().then(t =>{
                 t.forEach( bla=>{
                     if(bla.pricelist._id == ret.id){
@@ -117,19 +81,25 @@ module.exports.getPricelist = function(req, res)
                 message: 'Currently there is no valid pricelist!'
              });
          }
-       
-        
-    
-        
         });
        
     console.log(ret); 
 };
+
 function checkAdult(age){
     var today = new Date();
     if(age.startOfValidity.getFullYear() <= today.getFullYear() && age.startOfValidity.getMonth() <= today.getMonth() && age.startOfValidity.getDate() <= today.getDate()){
-        if(age.endOfValidity.getFullYear() >= today.getFullYear() && age.endOfValidity.getMonth() >= today.getMonth() && age.endOfValidity.getDate() >= today.getDate()){
-            return age;
+        if(age.endOfValidity.getFullYear() >= today.getFullYear() )
+        {
+            if( age.endOfValidity.getMonth()> today.getMonth()){
+                return age;
+            }
+            else if(age.endOfValidity.getMonth() == today.getMonth())
+            {
+                if( age.endOfValidity.getDate() >= today.getDate()){
+                    return age;
+                }
+            } 
         }
     }
 }
@@ -152,32 +122,18 @@ module.exports.addPricelist = function(req, res,err)
     var dat = new Date(req.body.PriceList.StartOfValidity);
     var end = new Date(req.body.PriceList.EndOfValidity);
     if( dat.getFullYear()< today.getFullYear()){
-        // sendJSONresponse(res, 400, {
-        //     "message": "You cant make pricelist for past"
-        // });
-        // res.status(400).json(new Error("greska"));
-        // return;
         return res.status(400).json({
             message: 'You cant make pricelist for past!'
          });
     }
     else if(dat.getMonth() < today.getMonth()){
-        // sendJSONresponse(res, 400, {
-        //     "message": "You cant make pricelist for past"
-        // });
-        // return;
         return res.status(400).json({
             message: 'You cant make pricelist for past!'
          });
     }else if(dat.getDate() < today.getDate()){
-        // sendJSONresponse(res, 400, {
-        //     "message": "You cant make pricelist for past",
-        //     "error" : "eroooor"
-        // }); 
        return res.status(400).json({
             message: 'You cant make pricelist for past!'
          });
-       // return;
     }else{
         if( dat.getFullYear() > end.getFullYear()){
             return res.status(400).json({
@@ -190,25 +146,28 @@ module.exports.addPricelist = function(req, res,err)
             message: 'Start of validity is bigger than end of validity!'
          });
        }else if( dat.getDate() > end.getDate()){
-        return res.status(400).json({
-            message: 'Start of validity is bigger than end of validity!'
-         });
+        if(st.getMonth() == et.getMonth()){
+            if(st.getDate() > et.getDate())
+            {
+                return res.status(400).json({"message": "Start of validity is bigger then end of validity!"});
+            }
+        }
        }
     }
 
-    var station = new Pricelist();
+    var pricelist = new Pricelist();
 
-    station.startOfValidity = new Date(req.body.PriceList.StartOfValidity);
-    station.endOfValidity = new Date(req.body.PriceList.EndOfValidity);
-    station.ticketPrices = [];
-    station.save(function(err){
+    pricelist.startOfValidity = new Date(req.body.PriceList.StartOfValidity);
+    pricelist.endOfValidity = new Date(req.body.PriceList.EndOfValidity);
+    pricelist.ticketPrices = [];
+    pricelist.save(function(err){
      
 
     var h = new TIcketPrice();
     TT.findOne({name: 'Hourly'}).then(bla => {
         h.ticketType = bla._id;
         h.price = req.body.Hourly;
-        h.pricelist = station._id;
+        h.pricelist = pricelist._id;
         h.save();
     });
     
@@ -217,7 +176,7 @@ module.exports.addPricelist = function(req, res,err)
     TT.findOne({name: 'Daily'}).then(bla => {
         d.ticketType = bla._id;
         d.price = req.body.Daily;
-        d.pricelist = station._id;
+        d.pricelist = pricelist._id;
         d.save();
     });
     
@@ -226,7 +185,7 @@ module.exports.addPricelist = function(req, res,err)
     TT.findOne({name: 'Monthly'}).then(bla => {
         m.ticketType = bla._id;
         m.price = req.body.Monthly;
-        m.pricelist = station._id;
+        m.pricelist = pricelist._id;
         m.save();
     });
     
@@ -235,16 +194,15 @@ module.exports.addPricelist = function(req, res,err)
     TT.findOne({name: 'Yearly'}).then(bla => {
         y.ticketType = bla._id;
         y.price = req.body.Yearly;
-        y.pricelist = station._id;
+        y.pricelist = pricelist._id;
         y.save();
     });
     
       if(err)
         {
-          return res.status(404).json(err);
-         //  return;
+          return res.status(404).json({"message":err});
         }
-    res.status(200).json({
+    return res.status(200).json({
         "message" : "Pricelist successfully added."
     });
 });

@@ -5,14 +5,13 @@ var Vehicle = mongoose.model('vehicle');
 module.exports.removeVehicle = function(req, res)
 {
     if(!req.params._id ) {
-        sendJSONresponse(res, 400, {
-            "message": "All fields required"
+       return  res.status(400).json({
+            "message" : "Id required."
         });
-        return;
     }
 
     Vehicle.findOneAndDelete({_id: req.params._id}).then(bla => {
-        res.status(200).json({
+       return  res.status(200).json({
             "message" : "Vehicle successfully removed."
         });
     });
@@ -20,8 +19,7 @@ module.exports.removeVehicle = function(req, res)
 
 module.exports.getAllAvailableVehicles = function(req, res)
 {
-   // Vehicle.find({timetables: []}).exec().then(type => {res.send(type);});
-    
+  
     Vehicle.find().exec().then(vehicles =>{
         var lista = [];
         vehicles.forEach(v =>{
@@ -42,10 +40,9 @@ module.exports.getAllVehicles = function(req, res)
 module.exports.addVehicle = function(req, res)
 {
     if(!req.body.Type) {
-        sendJSONresponse(res, 400, {
-            "message": "All fields required"
+       return  res.status(400).json({
+            "message" : "Id requiered."
         });
-        return;
     }
 
     var vehicle = new Vehicle();
@@ -54,11 +51,10 @@ module.exports.addVehicle = function(req, res)
     vehicle.save(function(err){
         if(err)
         {
-            res.status(404).json(err);
-            return;
+            return res.status(404).json({"message":err});
         }
 
-        res.status(200).json({
+        return res.status(200).json({
             "message" : "Vehicle successfully added."
         });
     });
